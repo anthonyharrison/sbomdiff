@@ -1,0 +1,2 @@
+defusedxml
+pyyaml>=5.4
