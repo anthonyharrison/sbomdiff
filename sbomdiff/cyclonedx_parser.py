@@ -27,10 +27,17 @@ class CycloneDXParser:
             if d["type"] in ["library", "application"]:
                 package = d["name"]
                 version = d["version"]
-                if "license" in d:
-                    license = d["license"]
-                else:
-                    license = "NOT FOUND"
+                license = "NOT FOUND"
+                # Multiple ways of defining license data
+                if "licenses" in d and len(d["licenses"]) > 0:
+                    license_data = d["licenses"][0]
+                    if "license" in license_data:
+                        if "id" in license_data["license"]:
+                            license = license_data["license"]["id"]
+                        elif "name" in license_data["license"]:
+                            license = license_data["license"]["name"]
+                    elif "expression" in license_data:
+                        license = license_data["expression"]
                 if package not in packages:
                     packages[package] = [version, license]
 
