@@ -33,19 +33,21 @@ class SPDXParser:
             lines = f.readlines()
         packages = {}
         package = ""
+        version = None
         for line in lines:
             line_elements = line.split(":")
             if line_elements[0] == "PackageName":
                 package = line_elements[1].strip().rstrip("\n")
                 version = None
+                license = None
             if line_elements[0] == "PackageVersion":
                 version = line_elements[1].strip().rstrip("\n")
                 version = version.split("-")[0]
                 version = version.split("+")[0]
             if line_elements[0] == "PackageLicenseConcluded":
                 license = line_elements[1].strip().rstrip("\n")
-                if package not in packages and version is not None:
-                    packages[package] = [version, license]
+            if package not in packages and version is not None and license is not None:
+                packages[package] = [version, license]
 
         return packages
 

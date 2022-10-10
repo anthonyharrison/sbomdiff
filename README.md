@@ -29,7 +29,7 @@ up for testing using different versions of Python.
 ## Usage
 
 ```
-usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [--exclude-license] [-d] [-o OUTPUT_FILE] [-V] FILE1 FILE2
+usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [-d] [-o OUTPUT_FILE] [-V] FILE1 FILE2
 
 positional arguments:
   FILE1                 first SBOM file
