@@ -55,7 +55,7 @@ class CycloneDXParser:
             try:
                 for component in components.findall(schema + "component"):
                     # Only for application and library components
-                    if component.attrib["type"] in ["library", "application"]:
+                    if component.attrib["type"] in ["library", "application", "operating-system"]:
                         component_name = component.find(schema + "name")
                         if component_name is None:
                             raise KeyError(f"Could not find package in {component}")
