@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
+import pathlib
 import sys
 import textwrap
 from collections import ChainMap
@@ -33,6 +34,11 @@ def main(argv=None):
         choices=["auto", "spdx", "cyclonedx"],
         help="specify type of sbom to compare (default: auto)",
     )
+    input_group.add_argument(
+        "--exclude-license",
+        action="store_true",
+        help="suppress reporting differences in the license of components",
+    )
     output_group = parser.add_argument_group("Output")
     output_group.add_argument(
         "-d",
@@ -56,6 +62,7 @@ def main(argv=None):
     defaults = {
         "output_file": "",
         "sbom": "auto",
+        "exclude_license": False,
         "debug": False,
     }
     raw_args = parser.parse_args(argv[1:])
@@ -63,6 +70,17 @@ def main(argv=None):
     args = ChainMap(args, defaults)
 
     # Validate CLI parameters
+
+    # Check both files exist
+    file_found = True
+    if not pathlib.Path(args["FILE1"]).exists():
+        print (f"{args['FILE1']} does not exist")
+        file_found = False
+    if not pathlib.Path(args["FILE2"]).exists():
+        print (f"{args['FILE2']} does not exist")
+        file_found = False
+    if not file_found:
+        return -1
 
     spdx = SPDXParser()
     cyclonedx = CycloneDXParser()
@@ -97,6 +115,7 @@ def main(argv=None):
         print("SBOM File2", args["FILE2"])
         print("SBOM File2 - type", file2_type)
         print("SBOM File2 - packages", len(packages2))
+        print("Exclude Licences", args["exclude_license"])
 
     # Keep count of differences
     version_changes = 0
@@ -114,7 +133,7 @@ def main(argv=None):
             if version1 != version2:
                 sbom_out.send_output(f"[VERSION] {package}: Version changed from {version1} to {version2}")
                 version_changes += 1
-            if license1 != license2:
+            if not args["exclude_license"] and license1 != license2:
                 sbom_out.send_output(f"[LICENSE] {package}: License changed from {license1} to {license2}")
                 license_changes += 1
         else:
@@ -130,7 +149,8 @@ def main(argv=None):
             new_packages += 1
     sbom_out.send_output("\nSummary\n-------")
     sbom_out.send_output(f"Version changes:  {version_changes}")
-    sbom_out.send_output(f"License changes:  {license_changes}")
+    if not args["exclude_license"]:
+        sbom_out.send_output(f"License changes:  {license_changes}")
     sbom_out.send_output(f"Removed packages: {removed_packages}")
     sbom_out.send_output(f"New packages:     {new_packages}")
 

@@ -29,7 +29,9 @@ up for testing using different versions of Python.
 ## Usage
 
 ```
-usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [-d] [-o OUTPUT_FILE] [-V] FILE1 FILE2
+usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [--exclude-license] [-d] [-o OUTPUT_FILE] [-V] FILE1 FILE2
+
+SBOMDiff compares two Software Bill of Materials and reports the differences.
 
 positional arguments:
   FILE1                 first SBOM file
@@ -42,11 +44,13 @@ optional arguments:
 Input:
   --sbom {auto,spdx,cyclonedx}
                         specify type of sbom to compare (default: auto)
+  --exclude-license     suppress reporting differences in the license of components
 
 Output:
-  -d, --debug           add debug information
+  -d, --debug           show debug information
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         output filename (default: output to stdout)
+
 ```
 						
 ## Operation
@@ -78,11 +82,11 @@ default is to report to the console but can be stored in a file (specified using
 
 The following design decisions have been made in processing the SBOM files:
 
-1. The comparision only considers package names, package versions and licenses. Other differences are not detected.
+1. The comparison only considers package names, package versions and licenses. Other differences are not detected.
 
 2. It is assumed that the SBOM is valid and contains syntactically valid data. Invalid files will be silently ignored.
 
-4. In SPDX format, the tool assumes that the name of a package preceeds the version and license of the package.
+4. In SPDX format, the tool assumes that the name of a package is followed by the version and license of the package.
 
 5. If there are multiple instances of a package included in the SBOM, only the first instance will be processed.
 
