@@ -24,7 +24,7 @@ class CycloneDXParser:
         data = json.load(open(sbom_file))
         packages = {}
         for d in data["components"]:
-            if d["type"] in ["library", "application"]:
+            if d["type"] in ["library", "application", "operating-system"]:
                 package = d["name"]
                 version = d["version"]
                 license = "NOT FOUND"
