@@ -86,6 +86,8 @@ The following design decisions have been made in processing the SBOM files:
 
 2. It is assumed that the SBOM is valid and contains syntactically valid data. Invalid files will be silently ignored.
 
+3. SBOMs which do not match the format of the SBOM to be processed when specified using the `--sbom` option is likely to result in incorrect differences being reported.
+
 4. In SPDX format, the tool assumes that the name of a package is followed by the version and license of the package.
 
 5. If there are multiple instances of a package included in the SBOM, only the first instance will be processed.
