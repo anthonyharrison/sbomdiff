@@ -55,15 +55,17 @@ class SPDXParser:
         """parses SPDX JSON BOM file extracting package name, version and license"""
         data = json.load(open(sbom_file))
         packages = {}
-        for d in data["packages"]:
-            package = d["name"]
-            try:
-                version = d["versionInfo"]
-                license = d["licenseConcluded"]
-                if package not in packages:
-                    packages[package] = [version, license]
-            except KeyError as e:
-                pass
+        # Check that valid SPDX JSON file is being processed
+        if "packages" in data:
+            for d in data["packages"]:
+                package = d["name"]
+                try:
+                    version = d["versionInfo"]
+                    license = d["licenseConcluded"]
+                    if package not in packages:
+                        packages[package] = [version, license]
+                except KeyError as e:
+                    pass
 
         return packages
 
@@ -128,15 +130,17 @@ class SPDXParser:
         data = yaml.safe_load(open(sbom_file))
 
         packages = {}
-        for d in data["packages"]:
-            package = d["name"]
-            try:
-                version = d["versionInfo"]
-                license = d["licenseConcluded"]
-                if package not in packages:
-                    packages[package] = [version, license]
-            except KeyError as e:
-                pass
+        # Check that valid SPDX YAML file is being processed
+        if "packages" in data:
+            for d in data["packages"]:
+                package = d["name"]
+                try:
+                    version = d["versionInfo"]
+                    license = d["licenseConcluded"]
+                    if package not in packages:
+                        packages[package] = [version, license]
+                except KeyError as e:
+                    pass
 
         return packages
 

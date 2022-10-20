@@ -23,23 +23,25 @@ class CycloneDXParser:
         """parses CycloneDX JSON BOM file extracting package name, version and license"""
         data = json.load(open(sbom_file))
         packages = {}
-        for d in data["components"]:
-            if d["type"] in ["library", "application", "operating-system"]:
-                package = d["name"]
-                version = d["version"]
-                license = "NOT FOUND"
-                # Multiple ways of defining license data
-                if "licenses" in d and len(d["licenses"]) > 0:
-                    license_data = d["licenses"][0]
-                    if "license" in license_data:
-                        if "id" in license_data["license"]:
-                            license = license_data["license"]["id"]
-                        elif "name" in license_data["license"]:
-                            license = license_data["license"]["name"]
-                    elif "expression" in license_data:
-                        license = license_data["expression"]
-                if package not in packages:
-                    packages[package] = [version, license]
+        # Check that valid CycloneDX JSON file is being processed
+        if "components" in data:
+            for d in data["components"]:
+                if d["type"] in ["library", "application", "operating-system"]:
+                    package = d["name"]
+                    version = d["version"]
+                    license = "NOT FOUND"
+                    # Multiple ways of defining license data
+                    if "licenses" in d and len(d["licenses"]) > 0:
+                        license_data = d["licenses"][0]
+                        if "license" in license_data:
+                            if "id" in license_data["license"]:
+                                license = license_data["license"]["id"]
+                            elif "name" in license_data["license"]:
+                                license = license_data["license"]["name"]
+                        elif "expression" in license_data:
+                            license = license_data["expression"]
+                    if package not in packages:
+                        packages[package] = [version, license]
 
         return packages
 
