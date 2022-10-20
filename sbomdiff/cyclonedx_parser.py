@@ -56,7 +56,7 @@ class CycloneDXParser:
         for components in root.findall(schema + "components"):
             try:
                 for component in components.findall(schema + "component"):
-                    # Only for application and library components
+                    # Only application, library and operating-systems components
                     if component.attrib["type"] in [
                         "library",
                         "application",
