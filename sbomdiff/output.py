@@ -34,7 +34,7 @@ class OutputManager:
 
 
 class SBOMOutput:
-    """Output manager """
+    """Output manager"""
 
     def __init__(self, filename="console"):
         self.filename = filename

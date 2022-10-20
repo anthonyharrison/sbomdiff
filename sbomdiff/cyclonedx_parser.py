@@ -20,7 +20,7 @@ class CycloneDXParser:
             return {}
 
     def parse_cyclonedx_json(self, sbom_file):
-        """parses CycloneDX JSON BOM file extracting package name, version and license"""
+        """parses CycloneDX JSON SBOM extracting package name, version and license"""
         data = json.load(open(sbom_file))
         packages = {}
         # Check that valid CycloneDX JSON file is being processed
@@ -57,7 +57,11 @@ class CycloneDXParser:
             try:
                 for component in components.findall(schema + "component"):
                     # Only for application and library components
-                    if component.attrib["type"] in ["library", "application", "operating-system"]:
+                    if component.attrib["type"] in [
+                        "library",
+                        "application",
+                        "operating-system",
+                    ]:
                         component_name = component.find(schema + "name")
                         if component_name is None:
                             raise KeyError(f"Could not find package in {component}")
@@ -77,7 +81,7 @@ class CycloneDXParser:
                         if version is not None:
                             if package not in packages:
                                 packages[package] = [version, license]
-            except KeyError as e:
+            except KeyError:
                 pass
 
         return packages

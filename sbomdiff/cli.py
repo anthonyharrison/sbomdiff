@@ -14,6 +14,7 @@ from sbomdiff.version import VERSION
 
 # CLI processing
 
+
 def main(argv=None):
 
     argv = argv or sys.argv
@@ -74,10 +75,10 @@ def main(argv=None):
     # Check both files exist
     file_found = True
     if not pathlib.Path(args["FILE1"]).exists():
-        print (f"{args['FILE1']} does not exist")
+        print(f"{args['FILE1']} does not exist")
         file_found = False
     if not pathlib.Path(args["FILE2"]).exists():
-        print (f"{args['FILE2']} does not exist")
+        print(f"{args['FILE2']} does not exist")
         file_found = False
     if not file_found:
         return -1
@@ -131,10 +132,16 @@ def main(argv=None):
             version1, license1 = packages1[package]
             version2, license2 = packages2[package]
             if version1 != version2:
-                sbom_out.send_output(f"[VERSION] {package}: Version changed from {version1} to {version2}")
+                sbom_out.send_output(
+                    f"[VERSION] {package}: "
+                    f"Version changed from {version1} to {version2}"
+                )
                 version_changes += 1
             if not args["exclude_license"] and license1 != license2:
-                sbom_out.send_output(f"[LICENSE] {package}: License changed from {license1} to {license2}")
+                sbom_out.send_output(
+                    f"[LICENSE] {package}: "
+                    f"License changed from {license1} to {license2}"
+                )
                 license_changes += 1
         else:
             # Package must have been removed
@@ -161,6 +168,7 @@ def main(argv=None):
         return 1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

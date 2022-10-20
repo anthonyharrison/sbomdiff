@@ -28,7 +28,7 @@ class SPDXParser:
             return {}
 
     def parse_spdx_tag(self, sbom_file):
-        """parses SPDX tag value BOM file extracting package name, version and license"""
+        """parses SPDX tag value file extracting package name, version and license"""
         with open(sbom_file) as f:
             lines = f.readlines()
         packages = {}
@@ -64,7 +64,7 @@ class SPDXParser:
                     license = d["licenseConcluded"]
                     if package not in packages:
                         packages[package] = [version, license]
-                except KeyError as e:
+                except KeyError:
                     pass
 
         return packages
@@ -75,6 +75,7 @@ class SPDXParser:
             lines = f.readlines()
         packages = {}
         package = ""
+        license = None
         for line in lines:
             try:
                 if line.strip().startswith("<spdx:name>"):
@@ -108,19 +109,21 @@ class SPDXParser:
                         license = "NOT FOUND"
                     else:
                         license = license_match.group(1)
-                        if license.startswith("\"http://spdx.org/licenses/"):
+                        if license.startswith('"http://spdx.org/licenses/'):
                             # SPDX license identifier. Extract last part of url
                             license = license.split("/")[-1]
-                            license=license[:-1] # Remove trialing "
+                            license = license[:-1]  # Remove trialing "
                         if "#" in license:
-                            # Extract last part of url after # e.g. http://spdx.org/rdf/terms#noassertion
+                            # Extract last part of url after #
+                            # e.g. http://spdx.org/rdf/terms#noassertion
                             license = license.split("#")[-1]
-                            license=license[:-1].upper() # Remove trialing " and capitalise
+                            # Remove trialing " and capitalise
+                            license = license[:-1].upper()
                     # To handle case where license appears before version
                     if package not in packages and version is not None:
                         packages[package] = [version, license]
                         license = None
-            except KeyError as e:
+            except KeyError:
                 pass
 
         return packages
@@ -139,7 +142,7 @@ class SPDXParser:
                     license = d["licenseConcluded"]
                     if package not in packages:
                         packages[package] = [version, license]
-                except KeyError as e:
+                except KeyError:
                     pass
 
         return packages
@@ -178,7 +181,7 @@ class SPDXParser:
                     if package not in packages:
                         packages[package] = [version, license]
 
-            except KeyError as e:
+            except KeyError:
                 pass
 
         return packages
