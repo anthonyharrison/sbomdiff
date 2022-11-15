@@ -92,9 +92,12 @@ The following design decisions have been made in processing the SBOM files:
 
 5. If there are multiple instances of a package included in the SBOM, only the first instance will be processed.
 
-6. If a license cannot be detected, the tool uses 'NOT FOUND' as the license to be used in the difference comparison.
+6. In CycloneDX format, if the _licenses_ section is not present for a component but the _evidence_ section is, the
+licence contained within the _evidence_ section shall be used.
 
-7. A non-zero return value indicates that differences were detected.
+7. If a license cannot be detected, the tool uses 'NOT FOUND' as the license to be used in the difference comparison.
+
+8. A non-zero return value indicates that differences were detected.
 
 ## Sample Output
 
