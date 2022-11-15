@@ -30,9 +30,13 @@ class CycloneDXParser:
                     package = d["name"]
                     version = d["version"]
                     license = "NOT FOUND"
+                    license_data = None
                     # Multiple ways of defining license data
                     if "licenses" in d and len(d["licenses"]) > 0:
                         license_data = d["licenses"][0]
+                    elif "evidence" in d and len(d["evidence"]["licenses"]) > 0:
+                        license_data = d["evidence"]["licenses"][0]
+                    if license_data is not None:
                         if "license" in license_data:
                             if "id" in license_data["license"]:
                                 license = license_data["license"]["id"]
