@@ -28,7 +28,7 @@ class CycloneDXParser:
             for d in data["components"]:
                 if d["type"] in ["library", "application", "operating-system"]:
                     package = d["name"]
-                    version = d["version"]
+                    version = d["version"] if "version" in d else "UNKNOWN"
                     license = "NOT FOUND"
                     license_data = None
                     # Multiple ways of defining license data
@@ -79,8 +79,9 @@ class CycloneDXParser:
                             raise KeyError(f"Could not find package in {component}")
                         component_version = component.find(schema + "version")
                         if component_version is None:
-                            raise KeyError(f"Could not find version in {component}")
-                        version = component_version.text
+                            version = "UNKNOWN"
+                        else:
+                            version = component_version.text
                         license = "NOT FOUND"
                         component_license = component.find(schema + "licenses")
                         if component_license is not None:
