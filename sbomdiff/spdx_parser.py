@@ -38,8 +38,8 @@ class SPDXParser:
             line_elements = line.split(":")
             if line_elements[0] == "PackageName":
                 package = line_elements[1].strip().rstrip("\n")
-                version = None
-                license = None
+                version = "UNKNOWN"
+                license = "NOT FOUND"
             if line_elements[0] == "PackageVersion":
                 version = line_elements[1].strip().rstrip("\n")
                 version = version.split("-")[0]
@@ -60,8 +60,8 @@ class SPDXParser:
             for d in data["packages"]:
                 package = d["name"]
                 try:
-                    version = d["versionInfo"]
-                    license = d["licenseConcluded"]
+                    version = d.get("versionInfo", "UNKNOWN")
+                    license = d.get("licenseConcluded", "NOT FOUND")
                     if package not in packages:
                         packages[package] = [version, license]
                 except KeyError:
@@ -86,7 +86,7 @@ class SPDXParser:
                     if not package_match:
                         raise KeyError(f"Could not find package in {stripped_line}")
                     package = package_match.group(1)
-                    version = None
+                    version = "UNKNOWN"
                 elif line.strip().startswith("<spdx:versionInfo>"):
                     stripped_line = line.strip().rstrip("\n")
                     version_match = re.search(
@@ -98,7 +98,7 @@ class SPDXParser:
                     # To handle case where license appears before version
                     if package not in packages and license is not None:
                         packages[package] = [version, license]
-                        version = None
+                        version = "UNKNOWN"
                 elif line.strip().startswith("<spdx:licenseConcluded"):
                     stripped_line = line.strip().rstrip("\n")
                     # Assume license tag is on a single line
@@ -138,8 +138,8 @@ class SPDXParser:
             for d in data["packages"]:
                 package = d["name"]
                 try:
-                    version = d["versionInfo"]
-                    license = d["licenseConcluded"]
+                    version = d.get("versionInfo", "UNKNOWN")
+                    license = d.get("licenseConcluded", "NOT FOUND")
                     if package not in packages:
                         packages[package] = [version, license]
                 except KeyError:
@@ -167,10 +167,11 @@ class SPDXParser:
                     raise KeyError(f"Could not find package in {component}")
                 version_match = component.find(schema + "versionInfo")
                 if version_match is None:
-                    raise KeyError(f"Could not find version in {component}")
-                version = version_match.text
-                if version is None:
-                    raise KeyError(f"Could not find version in {component}")
+                    version = "UNKNOWN"
+                else:
+                    version = version_match.text
+                    if version is None:
+                        version = "UNKNOWN"
                 component_license = component.find(schema + "licenseConcluded")
                 if component_license is None:
                     license = "NOT FOUND"

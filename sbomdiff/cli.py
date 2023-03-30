@@ -136,6 +136,10 @@ def main(argv=None):
             version1, license1 = packages1[package]
             version2, license2 = packages2[package]
             if version1 != version2:
+                if len(version1) == 0:
+                    version1 = "UNKNOWN"
+                if len(version2) == 0:
+                    version2 = "UNKNOWN"
                 sbom_out.send_output(
                     f"[VERSION] {package}: "
                     f"Version changed from {version1} to {version2}"
@@ -150,12 +154,16 @@ def main(argv=None):
         else:
             # Package must have been removed
             version1, license1 = packages1[package]
+            if len(version1) == 0:
+                version1 = "UNKNOWN"
             sbom_out.send_output(f"[REMOVED] {package}: (Version {version1})")
             removed_packages += 1
     # Check for any new packages
     for package in packages2:
         if package not in packages1:
             version2, license2 = packages2[package]
+            if len(version2) == 0:
+                version2 = "UNKNOWN"
             sbom_out.send_output(f"[ADDED  ] {package}: (Version {version2})")
             new_packages += 1
     sbom_out.send_output("\nSummary\n-------")
