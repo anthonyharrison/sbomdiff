@@ -7,7 +7,7 @@ reports the differences. It supports SBOMs created in both
 The following differences are detected:
 
 - Package version changes
-- Package licence changes
+- Package license changes
 - Package removed
 - Package added
 
@@ -93,7 +93,7 @@ The following design decisions have been made in processing the SBOM files:
 5. If there are multiple instances of a package included in the SBOM, only the first instance will be processed.
 
 6. In CycloneDX format, if the _licenses_ section is not present for a component but the _evidence_ section is, the
-licence contained within the _evidence_ section shall be used.
+license contained within the _evidence_ section shall be used.
 
 7. If a license cannot be detected, the tool uses 'NOT FOUND' as the license to be used in the difference comparison.
 
@@ -118,7 +118,7 @@ New packages:     0
 
 ## License
 
-Licensed under the Apache 2.0 Licence.
+Licensed under the Apache 2.0 License.
 
 ## Limitations
 
