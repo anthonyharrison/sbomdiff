@@ -16,7 +16,7 @@ class SPDXParser:
         """parses SPDX BOM file extracting package name, version and license"""
         if sbom_file.endswith(".spdx"):
             return self.parse_spdx_tag(sbom_file)
-        elif sbom_file.endswith(".spdx.json"):
+        elif sbom_file.endswith((".spdx.json",".json")):
             return self.parse_spdx_json(sbom_file)
         elif sbom_file.endswith(".spdx.rdf"):
             return self.parse_spdx_rdf(sbom_file)
