@@ -71,7 +71,7 @@ def main(argv=None):
     args = ChainMap(args, defaults)
 
     # Validate CLI parameters
-    if args['FILE1'] != args['FILE2']:
+    if args["FILE1"] != args["FILE2"]:
         # Check both files exist
         file_found = True
         if not pathlib.Path(args["FILE1"]).exists():
@@ -84,7 +84,7 @@ def main(argv=None):
             return -1
     else:
         # Same filename specified
-        print(f"Must specify different filenames")
+        print("Must specify different filenames")
         return -1
 
     spdx = SPDXParser()
