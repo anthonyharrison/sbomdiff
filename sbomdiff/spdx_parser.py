@@ -38,8 +38,8 @@ class SPDXParser:
             line_elements = line.split(":")
             if line_elements[0] == "PackageName":
                 package = line_elements[1].strip().rstrip("\n")
-                version = "UNKNOWN"
-                license = "NOT FOUND"
+                version = None
+                license = None
             if line_elements[0] == "PackageVersion":
                 version = line_elements[1].strip().rstrip("\n")
                 version = version.split("-")[0]
