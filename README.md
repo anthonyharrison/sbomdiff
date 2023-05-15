@@ -29,7 +29,7 @@ up for testing using different versions of Python.
 ## Usage
 
 ```
-usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [--exclude-license] [-d] [-o OUTPUT_FILE] [-V] FILE1 FILE2
+usage: sbomdiff [-h] [--sbom {auto,spdx,cyclonedx}] [--exclude-license] [-d] [-o OUTPUT_FILE] [-f {text,json,yaml}] [-V] FILE1 FILE2
 
 SBOMDiff compares two Software Bill of Materials and reports the differences.
 
@@ -37,7 +37,7 @@ positional arguments:
   FILE1                 first SBOM file
   FILE2                 second SBOM file
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -V, --version         show program's version number and exit
 
@@ -50,7 +50,8 @@ Output:
   -d, --debug           show debug information
   -o OUTPUT_FILE, --output-file OUTPUT_FILE
                         output filename (default: output to stdout)
-
+  -f {text,json,yaml}, --format {text,json,yaml}
+                        specify format of output file (default: text)
 ```
 						
 ## Operation
@@ -114,6 +115,66 @@ Version changes:  2
 License changes:  2
 Removed packages: 1
 New packages:     0
+```
+
+The following is an example of an output file in JSON format:
+
+```json
+{
+  "tool": {
+    "name": "sbomdiff",
+    "version": "0.4.2"
+  },
+  "file_1": "file1.json",
+  "file_2": "file2.spdx",
+  "differences": [
+    {
+      "package": "glibc",
+      "status": "change",
+      "license": {
+        "from": "GPL-2.0-only",
+        "to": "(LGPL-2.0-only OR LicenseRef-3)"
+      }
+    },
+    {
+      "package": "saxon",
+      "status": "change",
+      "license": {
+        "from": "Apache-2.0",
+        "to": "MPL-1.0"
+      }
+    },
+    {
+      "package": "rich",
+      "status": "change",
+      "version": {
+        "from": "11.0.0",
+        "to": "12.5.1"
+      },
+    },
+    {
+      "package": "colorama",
+      "status": "remove",
+      "version": {
+        "from": "0.4.4"
+      },
+    },   
+    {
+      "package": "pygments",
+      "status": "change",
+      "version": {
+        "from": "11.0.0",
+        "to": "12.5.1"
+      },
+    }
+  ],
+  "summary": {
+    "version_changes": "2",
+    "new_packages": "0"
+    "removed_packages": "1",
+    "license_changes": "2",
+  }
+}
 ```
 
 ## License
