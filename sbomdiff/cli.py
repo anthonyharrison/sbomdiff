@@ -7,8 +7,9 @@ import sys
 import textwrap
 from collections import ChainMap
 
-from sbomdiff.cyclonedx_parser import CycloneDXParser
 from lib4sbom.output import SBOMOutput
+
+from sbomdiff.cyclonedx_parser import CycloneDXParser
 from sbomdiff.spdx_parser import SPDXParser
 from sbomdiff.version import VERSION
 
@@ -158,8 +159,8 @@ def main(argv=None):
                     version2 = "UNKNOWN"
                 if args["format"] == "text":
                     sbom_out.send_output(
-                    f"[VERSION] {package}: "
-                    f"Version changed from {version1} to {version2}"
+                        f"[VERSION] {package}: "
+                        f"Version changed from {version1} to {version2}"
                     )
                 package_info["status"] = "change"
                 version_info = dict()
@@ -171,8 +172,8 @@ def main(argv=None):
             if not args["exclude_license"] and license1 != license2:
                 if args["format"] == "text":
                     sbom_out.send_output(
-                    f"[LICENSE] {package}: "
-                    f"License changed from {license1} to {license2}"
+                        f"[LICENSE] {package}: "
+                        f"License changed from {license1} to {license2}"
                     )
                 package_info["status"] = "change"
                 license_info = dict()
