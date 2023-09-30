@@ -42,8 +42,6 @@ class SPDXParser:
                 license = None
             if line_elements[0] == "PackageVersion":
                 version = line[16:].strip().rstrip("\n")
-                version = version.split("-")[0]
-                version = version.split("+")[0]
             if line_elements[0] == "PackageLicenseConcluded":
                 license = line_elements[1].strip().rstrip("\n")
             if package not in packages and version is not None and license is not None:
