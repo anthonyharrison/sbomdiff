@@ -1,5 +1,6 @@
 # Copyright (C) 2023 Anthony Harrison
 # SPDX-License-Identifier: Apache-2.0
+# Copyright 2024 Hewlett Packard Enterprise Development LP (comments for added material tagged HPE)
 
 import argparse
 import pathlib
@@ -204,14 +205,17 @@ def main(argv=None):
             if len(version2) == 0:
                 version2 = "UNKNOWN"
             if args["format"] == "text":
-                sbom_out.send_output(f"[ADDED  ] {package}: (Version {version2})")
+                sbom_out.send_output(f"[ADDED  ] {package}: (Version {version2}) (License {license2})")  # HPE Added license to text output
             else:
                 package_info = dict()
                 package_info["package"] = package
-                package_info["status"] = "add"
+                package_info["status"] = "add"  
                 version_info = dict()
                 version_info["from"] = version2
                 package_info["version"] = version_info
+                license_info = dict()                                                                   # HPE - Adding license dictionary
+                license_info["to"] = license2                                                           # HPE - Adding the new license
+                package_info["license"] = license_info                                                  # HPE - Adding license_info to package_info
                 diff_doc.append(package_info)
             new_packages += 1
     if args["format"] == "text":
