@@ -186,6 +186,7 @@ def main(argv=None):
         else:
             # Package must have been removed
             version1, license1 = packages1[package]
+            package_info["package"] = package
             if len(version1) == 0:
                 version1 = "UNKNOWN"
             if args["format"] == "text":
