@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Security updates are always made for the latest version of this component.  
+Security updates are always made for the latest version of this component.
 
 ## Reporting a Vulnerability
 
