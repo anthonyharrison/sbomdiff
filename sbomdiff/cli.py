@@ -18,7 +18,6 @@ from sbomdiff.version import VERSION
 
 
 def main(argv=None):
-
     argv = argv or sys.argv
     parser = argparse.ArgumentParser(
         prog="sbomdiff",
@@ -206,17 +205,21 @@ def main(argv=None):
             if len(version2) == 0:
                 version2 = "UNKNOWN"
             if args["format"] == "text":
-                sbom_out.send_output(f"[ADDED  ] {package}: (Version {version2}) (License {license2})")  # HPE Added license to text output
+                sbom_out.send_output(
+                    f"[ADDED  ] {package}: (Version {version2}) (License {license2})"
+                )  # HPE Added license to text output
             else:
                 package_info = dict()
                 package_info["package"] = package
-                package_info["status"] = "add"  
+                package_info["status"] = "add"
                 version_info = dict()
                 version_info["from"] = version2
                 package_info["version"] = version_info
-                license_info = dict()                                                                   # HPE - Adding license dictionary
-                license_info["to"] = license2                                                           # HPE - Adding the new license
-                package_info["license"] = license_info                                                  # HPE - Adding license_info to package_info
+                license_info = dict()  # HPE - Adding license dictionary
+                license_info["to"] = license2  # HPE - Adding the new license
+                package_info[
+                    "license"
+                ] = license_info  # HPE - Adding license_info to package_info
                 diff_doc.append(package_info)
             new_packages += 1
     if args["format"] == "text":
