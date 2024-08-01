@@ -34,16 +34,31 @@ class SPDXParser:
         packages = {}
         package = ""
         version = None
+        githubStr = "pkg.go.dev/"
         for line in lines:
             line_elements = line.split(":")
             if line_elements[0] == "PackageName":
+                isProductNameWithOnlyVersionNumber = False
                 package = line_elements[1].strip().rstrip("\n")
+                productNameWithOnlyVersionNumber = re.compile(r'(/)')
+                if bool(productNameWithOnlyVersionNumber.search(package)) != True:
+                    isProductNameWithOnlyVersionNumber = True
                 version = None
                 license = None
             if line_elements[0] == "PackageVersion":
                 version = line[16:].strip().rstrip("\n")
             if line_elements[0] == "PackageLicenseConcluded":
                 license = line_elements[1].strip().rstrip("\n")
+            if line_elements[0] == "PackageHomePage":
+                packageHomePage = line_elements[1].strip().rstrip("\n")
+                packageHomePageRemaining = ""
+                if len(line_elements) > 2 :
+                    packageHomePageRemaining = line_elements[2].strip().rstrip("\n")
+                packageHomePage = packageHomePage + packageHomePageRemaining
+                if isProductNameWithOnlyVersionNumber:
+                    tempArry = packageHomePage.split(githubStr)
+                    if len(tempArry) == 2:
+                        package = tempArry[1]
             if package not in packages and version is not None and license is not None:
                 packages[package] = [version, license]
 
