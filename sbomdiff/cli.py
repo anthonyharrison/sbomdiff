@@ -150,6 +150,8 @@ def main(argv=None):
             # Compare values for common package
             version1, license1 = packages1[package]
             version2, license2 = packages2[package]
+            version1 = version1.upper()
+            version2 = version2.upper()
             package_info["package"] = package
             diff_record = False
             if version1 != version2:
@@ -185,6 +187,7 @@ def main(argv=None):
         else:
             # Package must have been removed
             version1, license1 = packages1[package]
+            version1 = version1.upper()
             package_info["package"] = package
             if len(version1) == 0:
                 version1 = "UNKNOWN"
@@ -202,6 +205,7 @@ def main(argv=None):
     for package in packages2:
         if package not in packages1:
             version2, license2 = packages2[package]
+            version2 = version2.upper()
             if len(version2) == 0:
                 version2 = "UNKNOWN"
             if args["format"] == "text":
