@@ -42,7 +42,8 @@ class CycloneDXParser:
         [version, license] lists. This allows tracking the same package at
         multiple locations.
         """
-        data = json.load(open(sbom_file))
+        with open(sbom_file) as f:
+            data = json.load(f)
         packages = {}
         # Check that valid CycloneDX JSON file is being processed
         if "components" in data:

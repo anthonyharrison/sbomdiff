@@ -79,7 +79,8 @@ class SPDXParser:
         Returns a dictionary where keys are (name, path) tuples and values are
         [version, license] lists. SPDX doesn't have path info, so path is empty.
         """
-        data = json.load(open(sbom_file))
+        with open(sbom_file) as f:
+            data = json.load(f)
         packages = {}
         # Check that valid SPDX JSON file is being processed
         if "packages" in data:
@@ -168,7 +169,8 @@ class SPDXParser:
         Returns a dictionary where keys are (name, path) tuples and values are
         [version, license] lists. SPDX doesn't have path info, so path is empty.
         """
-        data = yaml.safe_load(open(sbom_file))
+        with open(sbom_file) as f:
+            data = yaml.safe_load(f)
 
         packages = {}
         # Check that valid SPDX YAML file is being processed
