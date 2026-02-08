@@ -27,13 +27,32 @@ class SPDXParser:
         else:
             return {}
 
+    def _get_package_key(self, name):
+        """Create a unique key for a package.
+
+        SPDX format doesn't typically include file path info, so we use
+        (name, "") for consistency with CycloneDX parser format.
+
+        Args:
+            name: Package name
+
+        Returns:
+            Tuple of (name, "") for use as dictionary key
+        """
+        return (name, "")
+
     def parse_spdx_tag(self, sbom_file):
-        """parses SPDX tag value file extracting package name, version and license"""
+        """parses SPDX tag value file extracting package name, version and license
+
+        Returns a dictionary where keys are (name, path) tuples and values are
+        [version, license] lists. SPDX doesn't have path info, so path is empty.
+        """
         with open(sbom_file) as f:
             lines = f.readlines()
         packages = {}
         package = ""
         version = None
+        license = None
         for line in lines:
             line_elements = line.split(":")
             if line_elements[0] == "PackageName":
@@ -44,35 +63,50 @@ class SPDXParser:
                 version = line[16:].strip().rstrip("\n")
             if line_elements[0] == "PackageLicenseConcluded":
                 license = line_elements[1].strip().rstrip("\n")
-            if package not in packages and version is not None and license is not None:
-                packages[package] = [version, license]
+            package_key = self._get_package_key(package)
+            if (
+                package_key not in packages
+                and version is not None
+                and license is not None
+            ):
+                packages[package_key] = [version, license]
 
         return packages
 
     def parse_spdx_json(self, sbom_file):
-        """parses SPDX JSON BOM file extracting package name, version and license"""
+        """parses SPDX JSON BOM file extracting package name, version and license
+
+        Returns a dictionary where keys are (name, path) tuples and values are
+        [version, license] lists. SPDX doesn't have path info, so path is empty.
+        """
         data = json.load(open(sbom_file))
         packages = {}
         # Check that valid SPDX JSON file is being processed
         if "packages" in data:
             for d in data["packages"]:
                 package = d["name"]
+                package_key = self._get_package_key(package)
                 try:
                     version = d.get("versionInfo", "UNKNOWN")
                     license = d.get("licenseConcluded", "NOT FOUND")
-                    if package not in packages:
-                        packages[package] = [version, license]
+                    if package_key not in packages:
+                        packages[package_key] = [version, license]
                 except KeyError:
                     pass
 
         return packages
 
     def parse_spdx_rdf(self, sbom_file):
-        """parses SPDX RDF BOM file extracting package name, version and license"""
+        """parses SPDX RDF BOM file extracting package name, version and license
+
+        Returns a dictionary where keys are (name, path) tuples and values are
+        [version, license] lists. SPDX doesn't have path info, so path is empty.
+        """
         with open(sbom_file) as f:
             lines = f.readlines()
         packages = {}
         package = ""
+        version = None
         license = None
         for line in lines:
             try:
@@ -94,8 +128,9 @@ class SPDXParser:
                         raise KeyError(f"Could not find version in {stripped_line}")
                     version = version_match.group(1)
                     # To handle case where license appears before version
-                    if package not in packages and license is not None:
-                        packages[package] = [version, license]
+                    package_key = self._get_package_key(package)
+                    if package_key not in packages and license is not None:
+                        packages[package_key] = [version, license]
                         version = "UNKNOWN"
                 elif line.strip().startswith("<spdx:licenseConcluded"):
                     stripped_line = line.strip().rstrip("\n")
@@ -118,8 +153,9 @@ class SPDXParser:
                             # Remove trialing " and capitalise
                             license = license[:-1].upper()
                     # To handle case where license appears before version
-                    if package not in packages and version is not None:
-                        packages[package] = [version, license]
+                    package_key = self._get_package_key(package)
+                    if package_key not in packages and version is not None:
+                        packages[package_key] = [version, license]
                         license = None
             except KeyError:
                 pass
@@ -127,7 +163,11 @@ class SPDXParser:
         return packages
 
     def parse_spdx_yaml(self, sbom_file):
-        """parses SPDX YAML BOM file extracting package name, version and license"""
+        """parses SPDX YAML BOM file extracting package name, version and license
+
+        Returns a dictionary where keys are (name, path) tuples and values are
+        [version, license] lists. SPDX doesn't have path info, so path is empty.
+        """
         data = yaml.safe_load(open(sbom_file))
 
         packages = {}
@@ -135,18 +175,23 @@ class SPDXParser:
         if "packages" in data:
             for d in data["packages"]:
                 package = d["name"]
+                package_key = self._get_package_key(package)
                 try:
                     version = d.get("versionInfo", "UNKNOWN")
                     license = d.get("licenseConcluded", "NOT FOUND")
-                    if package not in packages:
-                        packages[package] = [version, license]
+                    if package_key not in packages:
+                        packages[package_key] = [version, license]
                 except KeyError:
                     pass
 
         return packages
 
     def parse_spdx_xml(self, sbom_file):
-        """parses SPDX XML BOM file extracting package name, version and license"""
+        """parses SPDX XML BOM file extracting package name, version and license
+
+        Returns a dictionary where keys are (name, path) tuples and values are
+        [version, license] lists. SPDX doesn't have path info, so path is empty.
+        """
         # XML is experimental in SPDX 2.3
         packages = {}
         tree = ET.parse(sbom_file)
@@ -163,6 +208,7 @@ class SPDXParser:
                 package = package_match.text
                 if package is None:
                     raise KeyError(f"Could not find package in {component}")
+                package_key = self._get_package_key(package)
                 version_match = component.find(schema + "versionInfo")
                 if version_match is None:
                     version = "UNKNOWN"
@@ -177,8 +223,8 @@ class SPDXParser:
                     license = component_license.text
 
                 if version is not None:
-                    if package not in packages:
-                        packages[package] = [version, license]
+                    if package_key not in packages:
+                        packages[package_key] = [version, license]
 
             except KeyError:
                 pass
