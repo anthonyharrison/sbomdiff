@@ -14,6 +14,27 @@ from sbomdiff.cyclonedx_parser import CycloneDXParser
 from sbomdiff.spdx_parser import SPDXParser
 from sbomdiff.version import VERSION
 
+
+def format_package_display(package_key):
+    """Format package key for display.
+
+    Package keys are tuples of (name, path). When path is present,
+    show the binary name in parentheses for context.
+
+    Args:
+        package_key: Tuple of (name, path)
+
+    Returns:
+        Formatted string like "name" or "name (binary)"
+    """
+    name, path = package_key
+    if path:
+        # Extract filename from path
+        binary = path.rsplit("/", 1)[-1]
+        return f"{name} ({binary})"
+    return name
+
+
 # CLI processing
 
 
@@ -144,15 +165,19 @@ def main(argv=None):
     if args["format"] != "text":
         diff_doc = []
 
-    for package in packages1:
+    for package_key in packages1:
         package_info = dict()
-        if package in packages2:
+        package_display = format_package_display(package_key)
+        package_name, package_path = package_key
+        if package_key in packages2:
             # Compare values for common package
-            version1, license1 = packages1[package]
-            version2, license2 = packages2[package]
+            version1, license1 = packages1[package_key]
+            version2, license2 = packages2[package_key]
             version1 = version1.upper()
             version2 = version2.upper()
-            package_info["package"] = package
+            package_info["package"] = package_name
+            if package_path:
+                package_info["path"] = package_path
             diff_record = False
             if version1 != version2:
                 if len(version1) == 0:
@@ -161,7 +186,7 @@ def main(argv=None):
                     version2 = "UNKNOWN"
                 if args["format"] == "text":
                     sbom_out.send_output(
-                        f"[VERSION] {package}: "
+                        f"[VERSION] {package_display}: "
                         f"Version changed from {version1} to {version2}"
                     )
                 package_info["status"] = "change"
@@ -174,7 +199,7 @@ def main(argv=None):
             if not args["exclude_license"] and license1 != license2:
                 if args["format"] == "text":
                     sbom_out.send_output(
-                        f"[LICENSE] {package}: "
+                        f"[LICENSE] {package_display}: "
                         f"License changed from {license1} to {license2}"
                     )
                 package_info["status"] = "change"
@@ -186,13 +211,17 @@ def main(argv=None):
                 diff_record = True
         else:
             # Package must have been removed
-            version1, license1 = packages1[package]
+            version1, license1 = packages1[package_key]
             version1 = version1.upper()
-            package_info["package"] = package
+            package_info["package"] = package_name
+            if package_path:
+                package_info["path"] = package_path
             if len(version1) == 0:
                 version1 = "UNKNOWN"
             if args["format"] == "text":
-                sbom_out.send_output(f"[REMOVED] {package}: (Version {version1})")
+                sbom_out.send_output(
+                    f"[REMOVED] {package_display}: (Version {version1})"
+                )
             package_info["status"] = "remove"
             version_info = dict()
             version_info["from"] = version1
@@ -202,28 +231,32 @@ def main(argv=None):
         if args["format"] != "text" and diff_record:
             diff_doc.append(package_info)
     # Check for any new packages
-    for package in packages2:
-        if package not in packages1:
-            version2, license2 = packages2[package]
+    for package_key in packages2:
+        if package_key not in packages1:
+            package_display = format_package_display(package_key)
+            package_name, package_path = package_key
+            version2, license2 = packages2[package_key]
             version2 = version2.upper()
             if len(version2) == 0:
                 version2 = "UNKNOWN"
             if args["format"] == "text":
                 sbom_out.send_output(
-                    f"[ADDED  ] {package}: (Version {version2}) (License {license2})"
+                    f"[ADDED  ] {package_display}: (Version {version2}) (License {license2})"
                 )  # HPE Added license to text output
             else:
                 package_info = dict()
-                package_info["package"] = package
+                package_info["package"] = package_name
+                if package_path:
+                    package_info["path"] = package_path
                 package_info["status"] = "add"
                 version_info = dict()
                 version_info["from"] = version2
                 package_info["version"] = version_info
                 license_info = dict()  # HPE - Adding license dictionary
                 license_info["to"] = license2  # HPE - Adding the new license
-                package_info[
-                    "license"
-                ] = license_info  # HPE - Adding license_info to package_info
+                package_info["license"] = (
+                    license_info  # HPE - Adding license_info to package_info
+                )
                 diff_doc.append(package_info)
             new_packages += 1
     if args["format"] == "text":
