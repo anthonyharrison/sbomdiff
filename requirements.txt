@@ -1,3 +1,3 @@
 defusedxml
 pyyaml>=5.4
-lib4sbom >= 0.7.2
+lib4sbom >= 0.10.0
