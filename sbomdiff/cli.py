@@ -170,10 +170,12 @@ def main(argv=None):
         return -1
 
     sbom_parser = SBOMParser(sbom_type=args["sbom"])
-    # Extract packages frome ach file
+    # Extract packages from each file
     sbom_parser.parse_file(args["FILE1"])
     packages1 = process_packages(sbom_parser.get_packages())
     file1_type = sbom_parser.get_type()
+    # Ensure parser is set to default
+    sbom_parser.set_type(sbom_type=args["sbom"])
     sbom_parser.parse_file(args["FILE2"])
     packages2 = process_packages(sbom_parser.get_packages())
     file2_type = sbom_parser.get_type()
