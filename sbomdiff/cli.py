@@ -109,8 +109,8 @@ def main(argv=None):
             "BLAKE2b-512",
             "BLAKE3",
         ],
-        default="SHA256",
-        help="specify checksum algorithm to use in comparison (default: SHA256)",
+        default="",
+        help="specify checksum algorithm to use in comparison",
     )
     output_group = parser.add_argument_group("Output")
     output_group.add_argument(
@@ -146,7 +146,7 @@ def main(argv=None):
         "exclude_license": False,
         "debug": False,
         "format": "text",
-        "checksum": "SHA256"
+        "checksum": ""
     }
     raw_args = parser.parse_args(argv[1:])
     args = {key: value for key, value in vars(raw_args).items() if value}
@@ -249,7 +249,7 @@ def main(argv=None):
                 package_info["license"] = license_info
                 license_changes += 1
                 diff_record = True
-            if checksums1 is not None and checksums2 is not None:
+            if args["checksum"] != "" and checksums1 is not None and checksums2 is not None:
                 # compare checksums
                 value1 = value2 = None
                 for checksum in checksums1:
@@ -331,7 +331,8 @@ def main(argv=None):
             sbom_out.send_output(f"License changes:  {license_changes}")
         sbom_out.send_output(f"Removed packages: {removed_packages}")
         sbom_out.send_output(f"New packages:     {new_packages}")
-        sbom_out.send_output(f"Checksum changes: {checksum_changes}")
+        if args["checksum"] != "":
+            sbom_out.send_output(f"Checksum changes: {checksum_changes}")
 
     if args["format"] != "text":
         json_doc = {}
@@ -348,7 +349,8 @@ def main(argv=None):
         summary["removed_packages"] = removed_packages
         if not args["exclude_license"]:
             summary["license_changes"] = license_changes
-        summary["checksum_changes"] = checksum_changes
+        if args["checksum"] != "":
+            summary["checksum_changes"] = checksum_changes
         json_doc["summary"] = summary
         sbom_out.generate_output(json_doc)
 
